@@ -13,7 +13,7 @@ class CustomBackground extends StatelessWidget {
       ),
       child: Container(
           height: MediaQuery.sizeOf(context).height,
-          margin: const EdgeInsets.only(left: 15, right: 15, top: 15),
+          margin: const EdgeInsets.all(15),
           decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: BorderRadius.circular(15),

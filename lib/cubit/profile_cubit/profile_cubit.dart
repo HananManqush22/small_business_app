@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:small_business_app/core/api/api_Consumer.dart';
 import 'package:small_business_app/core/api/end_point.dart';
 import 'package:small_business_app/core/cache/cache_helper.dart';
-import 'package:small_business_app/core/function/upload_image_to_api.dart';
 import 'package:small_business_app/models/profiled_model.dart';
 
 part 'profile_state.dart';
@@ -14,14 +13,14 @@ class ProfileCubit extends Cubit<ProfileState> {
   static ProfileCubit get(context) => BlocProvider.of(context);
   final ApiConsumer api;
   var formKey = GlobalKey<FormState>();
-  AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
+  TextEditingController name = TextEditingController();
+  TextEditingController email = TextEditingController();
+  TextEditingController description = TextEditingController();
+  TextEditingController phone = TextEditingController();
+  TextEditingController address = TextEditingController();
 
-  String? name;
   XFile? logo;
-  String? email;
-  String? description;
-  String? phone;
-  String? address;
+
   uploadProfilePic() async {
     final ImagePicker picker = ImagePicker();
 
@@ -43,15 +42,17 @@ class ProfileCubit extends Cubit<ProfileState> {
           },
           isFormData: true);
       CacheHelper().saveData(key: 'idBrand', value: response['idBrand']);
+
       await api.post(
           url: profiledEndPoint,
           data: {
             'brandID': CacheHelper().getData(key: 'idBrand'),
             'name': name,
-            'logo': await uploadImageToApi(logo!),
+            'logo': '', //await uploadImageToApi(logo!),
             'description': description,
             'phone': phone,
             'address': address,
+            'email': email
           },
           isFormData: true);
 

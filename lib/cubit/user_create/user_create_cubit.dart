@@ -7,11 +7,10 @@ part 'user_create_state.dart';
 class UserCreateCubit extends Cubit<UserCreateState> {
   UserCreateCubit() : super(UserCreateInitial());
   static UserCreateCubit get(context) => BlocProvider.of(context);
-  String? email;
-  String? password;
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
 
   var formKey = GlobalKey<FormState>();
-  AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
 
   FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -20,8 +19,8 @@ class UserCreateCubit extends Cubit<UserCreateState> {
     try {
       emit(UserCreateLoadingState());
       await auth.createUserWithEmailAndPassword(
-        email: email!.trim(),
-        password: password!.trim(),
+        email: email.text,
+        password: password.text,
       );
       emit(UserCreateSuccessState());
     } on FirebaseAuthException catch (e) {
@@ -53,7 +52,4 @@ class UserCreateCubit extends Cubit<UserCreateState> {
       print('send email Verification');
     }
   }
-
-
-
 }

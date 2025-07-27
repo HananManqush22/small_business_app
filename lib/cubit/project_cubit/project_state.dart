@@ -14,9 +14,21 @@ class PostProjectErrorState extends ProjectState {
   PostProjectErrorState({required this.error});
 }
 
+class GitProjectLoadingState extends ProjectState {}
+
+class GitProjectSuccessState extends ProjectState {}
+
+class GitProjectErrorState extends ProjectState {
+  final String error;
+  GitProjectErrorState({required this.error});
+}
+
 class GetProjectLoadingState extends ProjectState {}
 
-class GetProjectSuccessState extends ProjectState {}
+class GetProjectSuccessState extends ProjectState {
+  final List<Data> projectModel;
+  GetProjectSuccessState({required this.projectModel});
+}
 
 class GetProjectErrorState extends ProjectState {
   final String error;
@@ -25,6 +37,34 @@ class GetProjectErrorState extends ProjectState {
 
 class GetIdeClientSuccessState extends ProjectState {}
 
+class GetClientByIdSuccessState extends ProjectState {}
+
 class GetReminderDateSuccessState extends ProjectState {}
 
 class GetChangeStatusSuccessState extends ProjectState {}
+
+class OutCostUpdatedState extends ProjectState {}
+
+class PostAllOutCostLoadingState extends ProjectState {}
+
+class PostAllOutCostSuccessState extends ProjectState {}
+
+class PostAllOutCostErrorState extends ProjectState {
+  final String error;
+  PostAllOutCostErrorState({required this.error});
+}
+
+class PostAllTasksLoadingState extends ProjectState {}
+
+class PostAllTasksCostSuccessState extends ProjectState {}
+
+class PostAllTasksErrorState extends ProjectState {
+  final String error;
+  PostAllTasksErrorState({required this.error});
+}
+
+class TasksUpdatedState extends ProjectState {}
+
+class RemoveTaskedState extends ProjectState {}
+
+class ChangIndexState extends ProjectState {}

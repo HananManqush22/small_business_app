@@ -35,8 +35,6 @@ class SingInPage extends StatelessWidget {
                     padding: const EdgeInsets.all(20.0),
                     child: Form(
                       key: UserCreateCubit.get(context).formKey,
-                      autovalidateMode:
-                          UserCreateCubit.get(context).autovalidateMode,
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
@@ -59,8 +57,12 @@ class SingInPage extends StatelessWidget {
                             ),
                             CustomTextFiled(
                               hint: 'اسم الحساب',
-                              onSave: (value) {
-                                UserCreateCubit.get(context).email = value!;
+                              controller: UserCreateCubit.get(context).email,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'هذا الحقل مطلوب';
+                                }
+                                return null;
                               },
                             ),
                             SizedBox(
@@ -68,17 +70,25 @@ class SingInPage extends StatelessWidget {
                             ),
                             CustomTextFiled(
                               hint: 'الايميل',
-                              onSave: (value) {
-                                UserCreateCubit.get(context).email = value!;
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'هذا الحقل مطلوب';
+                                }
+                                return null;
                               },
+                              controller: UserCreateCubit.get(context).email,
                             ),
                             SizedBox(
                               height: 15.h,
                             ),
                             CustomTextFiled(
                               hint: 'كلمة السر',
-                              onSave: (value) {
-                                UserCreateCubit.get(context).password = value!;
+                              controller: UserCreateCubit.get(context).password,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'هذا الحقل مطلوب';
+                                }
+                                return null;
                               },
                             ),
                             SizedBox(
@@ -91,18 +101,9 @@ class SingInPage extends StatelessWidget {
                                     .formKey
                                     .currentState!
                                     .validate()) {
-                                  UserCreateCubit.get(context)
-                                      .formKey
-                                      .currentState!
-                                      .save();
-
                                   UserCreateCubit.get(context).createUser();
                                   UserCreateCubit.get(context)
                                       .sendEmailVerification();
-                                } else {
-                                  UserCreateCubit.get(context)
-                                          .autovalidateMode =
-                                      AutovalidateMode.always;
                                 }
                               },
                               title: 'تسجيل',

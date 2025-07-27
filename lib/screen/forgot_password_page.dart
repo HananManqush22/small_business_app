@@ -39,7 +39,6 @@ class ForgotPasswordPage extends StatelessWidget {
                     ),
                     CustomTextFiled(
                       hint: ' الايميل',
-                      onSave: (value) {},
                     ),
                     SizedBox(
                       height: 20.h,

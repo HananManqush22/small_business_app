@@ -1,12 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:small_business_app/configuration/colors.dart';
+import 'package:small_business_app/screen/project_expenses_page.dart';
+import 'package:small_business_app/widget/component.dart';
 import 'package:small_business_app/widget/custom_card.dart';
 import 'package:small_business_app/widget/custom_text_button.dart';
 import 'package:small_business_app/widget/item_card.dart';
 
 class ShowProjectPage extends StatelessWidget {
-  const ShowProjectPage({super.key});
+  const ShowProjectPage(
+      {super.key,
+      required this.title,
+      required this.states,
+      required this.cost,
+      required this.date,
+      required this.client,
+      required this.days,
+      required this.description});
+  final String title;
+  final String states;
+  final String cost;
+  final String date;
+  final String client;
+  final String description;
+  final String days;
 
   @override
   Widget build(BuildContext context) {
@@ -30,29 +47,45 @@ class ShowProjectPage extends StatelessWidget {
                   padding: EdgeInsets.only(top: 30.h, right: 7.w, left: 7.w),
                   child: Column(
                     children: [
-                      CustomCard(item: ItemCard(), heigh: 180),
+                      CustomCard(
+                          item: ItemCard(
+                            title: title,
+                            states: states,
+                            cost: cost,
+                            date: date,
+                            client: client,
+                            days: days,
+                          ),
+                          heigh: 180),
                       Row(
                         children: [
                           Expanded(
-                            child: CustomCard(
-                                item: Column(
-                                  spacing: 10,
-                                  children: [
-                                    Icon(
-                                      Icons.attach_money,
-                                      color: primaryColor,
-                                      size: 60,
-                                    ),
-                                    Text(
-                                      'المصروفات',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(color: primaryColor),
-                                    ),
-                                  ],
-                                ),
-                                heigh: 130),
+                            child: InkWell(
+                              onTap: () {
+                                navigateAndFinish(
+                                    context: context,
+                                    widget: ProjectExpensesPage());
+                              },
+                              child: CustomCard(
+                                  item: Column(
+                                    spacing: 10,
+                                    children: [
+                                      Icon(
+                                        Icons.attach_money,
+                                        color: primaryColor,
+                                        size: 60,
+                                      ),
+                                      Text(
+                                        'المصروفات',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(color: primaryColor),
+                                      ),
+                                    ],
+                                  ),
+                                  heigh: 130),
+                            ),
                           ),
                           Expanded(
                             child: CustomCard(
@@ -90,7 +123,7 @@ class ShowProjectPage extends StatelessWidget {
                                     ?.copyWith(color: primaryColor),
                               ),
                               Text(
-                                'هذه النص تجربي لا اكثر فقط للتجربة هذه النص تجربي لا اكثر فقط للتجربة هذه النص تجربي لا اكثر فقط للتجربة هذه النص تجربي لا اكثر فقط للتجربة هذه النص تجربي لا اكثر فقط للتجربة هذه النص تجربي لا اكثر فقط للتجربة هذه النص تجربي لا اكثر فقط للتجربة',
+                                description,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall

@@ -39,8 +39,6 @@ class LoginPag extends StatelessWidget {
                     padding: const EdgeInsets.all(20.0),
                     child: Form(
                       key: SingInCubit.get(context).formKey,
-                      autovalidateMode:
-                          SingInCubit.get(context).autovalidateMode,
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
@@ -63,8 +61,12 @@ class LoginPag extends StatelessWidget {
                             ),
                             CustomTextFiled(
                               hint: 'الايميل',
-                              onSave: (value) {
-                                SingInCubit.get(context).singInEmail = value;
+                              controller: SingInCubit.get(context).singInEmail,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'هذا الحقل مطلوب';
+                                }
+                                return null;
                               },
                             ),
                             SizedBox(
@@ -72,9 +74,14 @@ class LoginPag extends StatelessWidget {
                             ),
                             CustomTextFiled(
                               hint: 'كلمة السر',
-                              onSave: (value) {
-                                SingInCubit.get(context).singInPassword = value;
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'هذا الحقل مطلوب';
+                                }
+                                return null;
                               },
+                              controller:
+                                  SingInCubit.get(context).singInPassword,
                             ),
                             Padding(
                                 padding: EdgeInsets.only(right: 195.w),
@@ -97,14 +104,7 @@ class LoginPag extends StatelessWidget {
                                     .formKey
                                     .currentState!
                                     .validate()) {
-                                  SingInCubit.get(context)
-                                      .formKey
-                                      .currentState!
-                                      .save();
                                   SingInCubit.get(context).singInUser();
-                                } else {
-                                  SingInCubit.get(context).autovalidateMode =
-                                      AutovalidateMode.always;
                                 }
                               },
                               title: 'تسجيل',

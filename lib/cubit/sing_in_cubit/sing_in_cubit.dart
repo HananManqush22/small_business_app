@@ -8,11 +8,10 @@ part 'sing_in_state.dart';
 class SingInCubit extends Cubit<SingInState> {
   SingInCubit() : super(SingInInitial());
   static SingInCubit get(context) => BlocProvider.of(context);
+  TextEditingController singInEmail = TextEditingController();
+  TextEditingController singInPassword = TextEditingController();
 
-  String? singInEmail;
-  String? singInPassword;
   var formKey = GlobalKey<FormState>();
-  AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
   User? user = FirebaseAuth.instance.currentUser;
 
   void singInUser() async {
@@ -21,8 +20,8 @@ class SingInCubit extends Cubit<SingInState> {
       FirebaseAuth auth = FirebaseAuth.instance;
       emit(SingInLoadingState());
       await auth.signInWithEmailAndPassword(
-        email: singInEmail!.trim(),
-        password: singInPassword!.trim(),
+        email: singInEmail.text,
+        password: singInPassword.text,
       );
 
       if (user != null && !user!.emailVerified) {
@@ -40,7 +39,6 @@ class SingInCubit extends Cubit<SingInState> {
         print('Wrong password provided for that user.');
         print(message);
       }
-     
     } catch (e) {
       emit(SingInErrorState(error: e.toString()));
     }
@@ -73,6 +71,4 @@ class SingInCubit extends Cubit<SingInState> {
       emit(SingInGooglErrorState(error: e.toString()));
     }
   }
-
-
 }

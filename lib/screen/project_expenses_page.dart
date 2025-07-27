@@ -15,7 +15,7 @@ class ProjectExpensesPage extends StatelessWidget {
         backgroundColor: primaryColor,
         title: Center(
           child: Text(
-            'خرج المشروع',
+            'مصروفات المشروع',
             style: Theme.of(context)
                 .textTheme
                 .bodyLarge

@@ -5,7 +5,21 @@ import 'package:small_business_app/configuration/colors.dart';
 import 'package:small_business_app/widget/custom_button_click.dart';
 
 class ItemCard extends StatelessWidget {
-  const ItemCard({super.key});
+  const ItemCard({
+    super.key,
+    required this.title,
+    required this.states,
+    required this.cost,
+    required this.date,
+    required this.client,
+    required this.days,
+  });
+  final String title;
+  final String states;
+  final String cost;
+  final String date;
+  final String client;
+  final String days;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +31,7 @@ class ItemCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'تصميم شعار شركة المتحدة',
+                  title,
                   style: Theme.of(context)
                       .textTheme
                       .bodyLarge
@@ -31,14 +45,14 @@ class ItemCard extends StatelessWidget {
                     CustomButtonClick(
                       isLoading: false,
                       onTap: () {},
-                      title: 'قيد التنفيذ',
+                      title: states,
                       sizeWidth: 90.h,
                     ),
                     SizedBox(
                       width: 10.w,
                     ),
                     Text(
-                      '500.560',
+                      cost,
                       style: Theme.of(context)
                           .textTheme
                           .bodyLarge
@@ -59,17 +73,30 @@ class ItemCard extends StatelessWidget {
               lineWidth: 6.0,
               animation: true,
               percent: 0.5,
-              center: Text(
-                "50%",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(color: primaryColor),
+              center: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    days,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: primaryColor),
+                  ),
+                  Text(
+                    "يوم",
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium
+                        ?.copyWith(color: primaryColor),
+                  ),
+                ],
               ),
               circularStrokeCap: CircularStrokeCap.round,
               progressColor: primaryColor,
               backgroundColor: fillColor,
             ),
+         
           ],
         ),
         SizedBox(
@@ -98,7 +125,7 @@ class ItemCard extends StatelessWidget {
               size: 15,
             ),
             Text(
-              'عبدالرحمن منقوش',
+              client,
               style: Theme.of(context)
                   .textTheme
                   .labelLarge
@@ -113,7 +140,7 @@ class ItemCard extends StatelessWidget {
               size: 15,
             ),
             Text(
-              '  19 / 4 / 2002 م',
+              date,
               style: Theme.of(context)
                   .textTheme
                   .labelLarge

@@ -1,13 +1,13 @@
 class ClientModel {
-  List<Data>? data;
+  List<ClientData>? data;
 
   ClientModel({this.data});
 
   ClientModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <ClientData>[];
       json['data'].forEach((v) {
-        data!.add(Data.fromJson(v));
+        data!.add(ClientData.fromJson(v));
       });
     }
   }
@@ -23,7 +23,7 @@ class ClientModel {
   }
 }
 
-class Data {
+class ClientData {
   int? id;
   String? name;
   String? email;
@@ -33,7 +33,7 @@ class Data {
   String? createAt;
   String? updateAt;
 
-  Data(
+  ClientData(
       {this.id,
       this.name,
       this.email,
@@ -43,7 +43,7 @@ class Data {
       this.createAt,
       this.updateAt});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  ClientData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     email = json['email'];

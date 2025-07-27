@@ -7,6 +7,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:small_business_app/core/api/dio_consume.dart';
 import 'package:small_business_app/configuration/colors.dart';
 import 'package:small_business_app/cubit/profile_cubit/profile_cubit.dart';
+import 'package:small_business_app/screen/show_profiled_page.dart';
+import 'package:small_business_app/widget/component.dart';
 import 'package:small_business_app/widget/custom_app_bar.dart';
 import 'package:small_business_app/widget/custom_background.dart';
 import 'package:small_business_app/widget/custom_text_file.dart';
@@ -20,7 +22,10 @@ class AddProfiledPage extends StatelessWidget {
       create: (context) => ProfileCubit(DioConsume(dio: Dio())),
       child: BlocConsumer<ProfileCubit, ProfileState>(
         listener: (context, state) {
-          // TODO: implement listener
+          if (state is PostProfileSuccessState) {
+            navigateAndFinish(
+                context: context, widget: const ShowProfiledPage());
+          }
         },
         builder: (context, state) {
           var cubit = ProfileCubit.get(context);
@@ -36,14 +41,11 @@ class AddProfiledPage extends StatelessWidget {
                       if (cubit.formKey.currentState!.validate()) {
                         cubit.formKey.currentState!.save();
                         await cubit.postProfile();
-                      } else {
-                        cubit.autovalidateMode = AutovalidateMode.always;
                       }
                     })),
             body: CustomBackground(
               item: Form(
                 key: cubit.formKey,
-                autovalidateMode: cubit.autovalidateMode,
                 child: SingleChildScrollView(
                   child: Column(
                     spacing: 10,
@@ -80,35 +82,37 @@ class AddProfiledPage extends StatelessWidget {
                       ),
                       CustomTextFiled(
                         hint: 'اسم البراند',
-                        onSave: (value) {
-                          cubit.name = value;
+                        controller: cubit.name,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'هذا الحقل مطلوب';
+                          }
+                          return null;
                         },
                       ),
                       CustomTextFiled(
                         hint: ' رقم الهاتف',
-                        onSave: (value) {
-                          cubit.phone = value;
+                        controller: cubit.phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'هذا الحقل مطلوب';
+                          }
+                          return null;
                         },
                       ),
                       CustomTextFiled(
                         hint: ' حساب البراند',
-                        onSave: (value) {
-                          cubit.email = value;
-                        },
+                        controller: cubit.email,
                       ),
                       CustomTextFiled(
                         hint: ' العنوان',
                         maxLine: 2,
-                        onSave: (value) {
-                          cubit.address = value;
-                        },
+                        controller: cubit.address,
                       ),
                       CustomTextFiled(
                         hint: 'وصف البراند ',
                         maxLine: 3,
-                        onSave: (value) {
-                          cubit.description = value;
-                        },
+                        controller: cubit.description,
                       ),
                     ],
                   ),

@@ -11,43 +11,55 @@ class ClientsCubit extends Cubit<ClientsState> {
   final ApiConsumer api;
   static ClientsCubit get(context) => BlocProvider.of(context);
   var formKey = GlobalKey<FormState>();
-  AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
-  String? name;
-  String? email;
-  String? phone;
-  String? address;
-  String? description;
+  TextEditingController name = TextEditingController();
+  TextEditingController email = TextEditingController();
+  TextEditingController phone = TextEditingController();
+  TextEditingController address = TextEditingController();
+  TextEditingController description = TextEditingController();
+
   postClint() async {
     try {
       emit(AddClientLoadingState());
       await api.post(
           url: clientEndPoint,
           data: {
-            'name': name,
-            'email': email,
-            'phone': phone,
-            'address': address,
-            'description': description,
+            'name': name.text,
+            'email': email.text,
+            'phone': phone.text,
+            'address': address.text,
+            'description': description.text,
           },
           isFormData: true);
+
       emit(AddClientSuccessState());
     } catch (e) {
       emit(AddClientErrorState(error: e.toString()));
     }
   }
 
+  List<ClientData> clients = [];
   getClint() async {
     try {
+      if (clients.isNotEmpty) {
+        emit(GetClientSuccessState(clientModel: clients));
+        return;
+      }
       emit(GetClientLoadingState());
 
       var response = await api.get(
         url: clientEndPoint,
       );
       ClientModel clientModel = ClientModel.fromJson(response);
-      List<Data> clients = clientModel.data ?? [];
+      clients = clientModel.data ?? [];
       emit(GetClientSuccessState(clientModel: clients));
     } catch (e) {
       emit(GetClientErrorState(error: e.toString()));
+    }
+  }
+
+  getClintById(int? id) {
+    if (clients.isNotEmpty) {
+      return clients.where((value) => value.id == id).toList();
     }
   }
 }

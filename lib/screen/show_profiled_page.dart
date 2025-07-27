@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:small_business_app/configuration/colors.dart';
 import 'package:small_business_app/core/api/dio_consume.dart';
 import 'package:small_business_app/cubit/profile_cubit/profile_cubit.dart';
+import 'package:small_business_app/screen/add_profiled_page.dart';
+import 'package:small_business_app/widget/component.dart';
 
 class ShowProfiledPage extends StatelessWidget {
   const ShowProfiledPage({super.key});
@@ -15,11 +17,19 @@ class ShowProfiledPage extends StatelessWidget {
       value: ProfileCubit(DioConsume(dio: Dio()))..getProfile(),
       child: Scaffold(
         backgroundColor: fillColor,
-        body: BlocBuilder<ProfileCubit, ProfileState>(
+        body: BlocConsumer<ProfileCubit, ProfileState>(
+          listener: (context, state) {
+            if (state is GetProfileSuccessState) {
+              if (state.profiledModel.isEmpty) {
+                navigateAndFinish(context: context, widget: AddProfiledPage());
+              }
+            }
+          },
           builder: (context, state) {
             return state is GetProfileStateLoadingState
                 ? Center(child: CircularProgressIndicator())
-                : state is GetProfileSuccessState
+                : state is GetProfileSuccessState &&
+                        state.profiledModel.isNotEmpty
                     ? Column(
                         spacing: 10,
                         crossAxisAlignment: CrossAxisAlignment.start,

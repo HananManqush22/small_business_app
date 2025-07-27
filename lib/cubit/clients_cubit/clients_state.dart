@@ -17,7 +17,7 @@ class AddClientErrorState extends ClientsState {
 class GetClientLoadingState extends ClientsState {}
 
 class GetClientSuccessState extends ClientsState {
-  final List<Data> clientModel;
+  final List<ClientData> clientModel;
 
   GetClientSuccessState({required this.clientModel});
 }
