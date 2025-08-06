@@ -96,7 +96,6 @@ class ItemCard extends StatelessWidget {
               progressColor: primaryColor,
               backgroundColor: fillColor,
             ),
-         
           ],
         ),
         SizedBox(
@@ -104,10 +103,23 @@ class ItemCard extends StatelessWidget {
         ),
         Row(
           children: [
-            CircleAvatar(
-              backgroundColor: primaryColor,
-              radius: 8,
-            ),
+            Container(
+                width: 15,
+                height: 15,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: primaryColor,
+                    width: 1,
+                  ),
+                  color: backgroundColor,
+                ),
+                child: Icon(
+                  Icons.check,
+                  color: primaryColor,
+                  size: 10,
+                )),
             SizedBox(
               width: 8.w,
             ),

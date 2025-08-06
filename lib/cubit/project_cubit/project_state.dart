@@ -14,6 +14,15 @@ class PostProjectErrorState extends ProjectState {
   PostProjectErrorState({required this.error});
 }
 
+class PatchProjectLoadingState extends ProjectState {}
+
+class PatchProjectSuccessState extends ProjectState {}
+
+class PatchProjectErrorState extends ProjectState {
+  final String error;
+  PatchProjectErrorState({required this.error});
+}
+
 class GitProjectLoadingState extends ProjectState {}
 
 class GitProjectSuccessState extends ProjectState {}

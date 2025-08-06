@@ -3,7 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:small_business_app/configuration/colors.dart';
 
 class CustomCard extends StatelessWidget {
-  const CustomCard({super.key, required this.item, required this.heigh});
+  const CustomCard({
+    super.key,
+    required this.item,
+    required this.heigh,
+  });
   final Widget item;
   final double heigh;
 

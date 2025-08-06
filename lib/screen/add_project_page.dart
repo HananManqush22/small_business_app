@@ -22,6 +22,7 @@ class _AddProjectPageState extends State<AddProjectPage> {
   @override
   void initState() {
     super.initState();
+
     ClientsCubit.get(context).getClint();
   }
 
@@ -37,7 +38,6 @@ class _AddProjectPageState extends State<AddProjectPage> {
             preferredSize: Size.fromHeight(60.h),
             child: CustomAppBar(
               title: "انشاء مشروع",
-              closeFunction: () {},
               isLoading: state is PostProjectLoadingState,
               addFunction: () async {
                 if (cubit.formKey.currentState!.validate()) {
@@ -406,8 +406,8 @@ class _AddProjectPageState extends State<AddProjectPage> {
                                   sizeWidth: MediaQuery.sizeOf(context).width,
                                   title: 'قيد التنفيد',
                                   onTap: () {
-                                    cubit.status = 'قيد التنفيد';
-                                    cubit.upDateStatus();
+                                    cubit.upDateStatus(
+                                        cubit.status = 'قيد التنفيد');
                                   })),
                           Expanded(
                               child: CustomButtonClick(
@@ -415,8 +415,8 @@ class _AddProjectPageState extends State<AddProjectPage> {
                                   sizeWidth: MediaQuery.sizeOf(context).width,
                                   title: 'تحت الانتظار',
                                   onTap: () {
-                                    cubit.status = 'تحت الانتظار';
-                                    cubit.upDateStatus();
+                                    cubit.upDateStatus(
+                                        cubit.status = 'تحت الانتظار');
                                   })),
                           Expanded(
                               child: CustomButtonClick(
@@ -424,8 +424,8 @@ class _AddProjectPageState extends State<AddProjectPage> {
                                   sizeWidth: MediaQuery.sizeOf(context).width,
                                   title: 'تحت المراجعة',
                                   onTap: () {
-                                    cubit.status = 'تحت المراجعة';
-                                    cubit.upDateStatus();
+                                    cubit.upDateStatus(
+                                        cubit.status = 'تحت المراجعة');
                                   })),
                         ],
                       )

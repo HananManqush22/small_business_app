@@ -5,11 +5,10 @@ class CustomAppBar extends StatelessWidget {
   const CustomAppBar(
       {super.key,
       required this.title,
-      required this.closeFunction,
       required this.addFunction,
       this.isLoading = false});
   final String title;
-  final void Function() closeFunction;
+
   final void Function() addFunction;
   final bool isLoading;
   @override
@@ -19,12 +18,6 @@ class CustomAppBar extends StatelessWidget {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-              onPressed: closeFunction,
-              icon: Icon(
-                Icons.close,
-                color: backgroundColor,
-              )),
           Text(
             title,
             style: Theme.of(context)

@@ -6,11 +6,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:small_business_app/configuration/colors.dart';
 import 'package:small_business_app/cubit/clients_cubit/clients_cubit.dart';
 import 'package:small_business_app/cubit/project_cubit/project_cubit.dart';
-import 'package:small_business_app/screen/show_profiled_page.dart';
 import 'package:small_business_app/screen/show_project_page.dart';
 import 'package:small_business_app/widget/component.dart';
 import 'package:small_business_app/widget/custom_card.dart';
-import 'package:small_business_app/widget/custom_text_button.dart';
+import 'package:small_business_app/widget/custom_drawer.dart';
+import 'package:small_business_app/widget/custom_tap_bar.dart';
 import 'package:small_business_app/widget/item_card.dart';
 
 import 'package:small_business_app/models/client_model.dart';
@@ -27,7 +27,9 @@ class HomePage extends StatelessWidget {
       'قيد التنفيد',
       'تحت الانتظار',
       "تحت المراجعة",
-      "ثم الانهاء",
+      'مكتمل ',
+      ' ثم التسليم',
+      ' ثم الالغاء',
     ];
     return DefaultTabController(
       length: 4,
@@ -81,22 +83,7 @@ class HomePage extends StatelessWidget {
               }),
             ],
           ),
-          endDrawer: Drawer(
-            backgroundColor: primaryColor,
-            shape: ContinuousRectangleBorder(
-              borderRadius: BorderRadius.only(topRight: Radius.circular(80)),
-            ),
-            child: CustomTextButton(
-                title: 'البراند',
-                textStyle: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
-                    ?.copyWith(color: backgroundColor),
-                onPressed: () {
-                  navigateAndFinish(
-                      context: context, widget: ShowProfiledPage());
-                }),
-          ),
+          endDrawer: CustomDrawer(),
           body: OfflineBuilder(
             connectivityBuilder: (
               BuildContext context,
@@ -119,61 +106,10 @@ class HomePage extends StatelessWidget {
 
                           return Column(
                             children: [
-                              Container(
-                                  margin: EdgeInsets.only(
-                                      top: 15.h, right: 15.w, bottom: 5),
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 50.h,
-                                  decoration: BoxDecoration(
-                                    color: backgroundColor,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.shade300,
-                                        spreadRadius: 1,
-                                        blurRadius: 2,
-                                        offset: const Offset(0, 3),
-                                      ),
-                                    ],
-                                    borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(25),
-                                      bottomRight: Radius.circular(25),
-                                    ),
-                                  ),
-                                  child: ListView.builder(
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: items.length,
-                                      itemBuilder: (context, index) {
-                                        final bool isSelected =
-                                            index == cubit.selectedIndex;
-                                        return InkWell(
-                                          onTap: () {
-                                            cubit.changeIndex(index);
-                                          },
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 16.w,
-                                                vertical: 12.h),
-                                            decoration: BoxDecoration(
-                                              color: isSelected
-                                                  ? primaryColor
-                                                  : Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            child: Text(
-                                              items[index],
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium
-                                                  ?.copyWith(
-                                                    color: isSelected
-                                                        ? Colors.white
-                                                        : primaryFont,
-                                                  ),
-                                            ),
-                                          ),
-                                        );
-                                      })),
+                              CustomTapBar(
+                                items: items,
+                                selectedIndex: cubit.selectedIndex,
+                              ),
                               Expanded(
                                 child: BlocBuilder<ProjectCubit, ProjectState>(
                                   builder: (context, state) {
@@ -200,36 +136,46 @@ class HomePage extends StatelessWidget {
                                         int days = cubit.getProgressPercent(
                                             projectItem.date ?? '');
 
-                                        return CustomCard(
-                                          heigh: 150,
-                                          item: InkWell(
-                                            onTap: () {
-                                              navigateAndFinish(
-                                                context: context,
-                                                widget: ShowProjectPage(
-                                                  title: '${projectItem.name}',
-                                                  states:
-                                                      '${projectItem.status}',
-                                                  cost: '${projectItem.cost}',
-                                                  date: '${projectItem.date}',
-                                                  client: clientId.isEmpty
-                                                      ? ''
-                                                      : '${clientId[0].name}',
-                                                  description:
-                                                      '${projectItem.description}',
-                                                  days: '$days',
-                                                ),
-                                              );
-                                            },
-                                            child: ItemCard(
-                                              title: '${projectItem.name}',
-                                              states: '${projectItem.status}',
-                                              cost: '${projectItem.cost}',
-                                              date: '${projectItem.date}',
-                                              client: clientId.isEmpty
-                                                  ? ''
-                                                  : '${clientId[0].name}',
-                                              days: '$days',
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5),
+                                          child: CustomCard(
+                                            heigh: 150,
+                                            item: InkWell(
+                                              onTap: () {
+                                                navigateAndFinish(
+                                                  context: context,
+                                                  widget: ShowProjectPage(
+                                                    reminderDate:
+                                                        '${projectItem.remendDate}',
+                                                    title:
+                                                        '${projectItem.name}',
+                                                    states:
+                                                        '${projectItem.status}',
+                                                    cost: '${projectItem.cost}',
+                                                    date: '${projectItem.date}',
+                                                    client: clientId.isEmpty
+                                                        ? ''
+                                                        : '${clientId[0].name}',
+                                                    description:
+                                                        '${projectItem.description}',
+                                                    days: '$days',
+                                                    projectId: projectItem.id!,
+                                                    status:
+                                                        '${projectItem.status}',
+                                                  ),
+                                                );
+                                              },
+                                              child: ItemCard(
+                                                title: '${projectItem.name}',
+                                                states: '${projectItem.status}',
+                                                cost: '${projectItem.cost}',
+                                                date: '${projectItem.date}',
+                                                client: clientId.isEmpty
+                                                    ? ''
+                                                    : '${clientId[0].name}',
+                                                days: '$days',
+                                              ),
                                             ),
                                           ),
                                         );

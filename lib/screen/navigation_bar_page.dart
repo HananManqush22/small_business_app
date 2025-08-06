@@ -55,7 +55,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.message),
+            icon: Icon(Icons.date_range_outlined),
             label: '',
           ),
           BottomNavigationBarItem(

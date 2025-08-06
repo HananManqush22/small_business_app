@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:small_business_app/configuration/colors.dart';
+import 'package:small_business_app/cubit/project_cubit/project_cubit.dart';
 
 class CustomTapBar extends StatelessWidget {
   const CustomTapBar({
     super.key,
     required this.items,
     required this.selectedIndex,
-    required this.onTap,
   });
   final List<String> items;
   final int selectedIndex;
-  final Function(int) onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -39,22 +39,29 @@ class CustomTapBar extends StatelessWidget {
             itemCount: items.length,
             itemBuilder: (context, index) {
               final bool isSelected = index == selectedIndex;
-              return InkWell(
-                onTap: () = onTap(index),
-                child: Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                  decoration: BoxDecoration(
-                    color: isSelected ? primaryColor : Colors.transparent,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    items[index],
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: isSelected ? Colors.white : primaryFont,
-                        ),
-                  ),
-                ),
+
+              return BlocBuilder<ProjectCubit, ProjectState>(
+                builder: (context, state) {
+                  return InkWell(
+                    onTap: () {
+                      ProjectCubit.get(context).changeIndex(index);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 12.h),
+                      decoration: BoxDecoration(
+                        color: isSelected ? primaryColor : Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        items[index],
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: isSelected ? Colors.white : primaryFont,
+                            ),
+                      ),
+                    ),
+                  );
+                },
               );
             }));
   }

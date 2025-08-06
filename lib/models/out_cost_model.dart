@@ -1,9 +1,9 @@
-class ProfiledModel {
+class OutCostModel {
   List<Data>? data;
 
-  ProfiledModel({this.data});
+  OutCostModel({this.data});
 
-  ProfiledModel.fromJson(Map<String, dynamic> json) {
+  OutCostModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
@@ -13,7 +13,7 @@ class ProfiledModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    final Map<String, dynamic> data = Map<String, dynamic>();
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -23,34 +23,25 @@ class ProfiledModel {
 
 class Data {
   int? id;
-  int? brandID;
-  String? name;
-  String? logo;
+  int? projectID;
+  String? amount;
   String? description;
-  String? phone;
-  String? address;
   String? createAt;
   String? updateAt;
 
   Data(
       {this.id,
-      this.brandID,
-      this.name,
-      this.logo,
+      this.projectID,
+      this.amount,
       this.description,
-      this.phone,
-      this.address,
       this.createAt,
       this.updateAt});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    brandID = json['brandID'];
-    name = json['name'];
-    logo = json['logo'];
+    projectID = json['projectID'];
+    amount = json['amount'];
     description = json['description'];
-    phone = json['phone'];
-    address = json['address'];
     createAt = json['create_at'];
     updateAt = json['update_at'];
   }
@@ -58,12 +49,9 @@ class Data {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = id;
-    data['brandID'] = brandID;
-    data['name'] = name;
-    data['logo'] = logo;
+    data['projectID'] = projectID;
+    data['amount'] = amount;
     data['description'] = description;
-    data['phone'] = phone;
-    data['address'] = address;
     data['create_at'] = createAt;
     data['update_at'] = updateAt;
     return data;

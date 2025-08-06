@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:small_business_app/configuration/colors.dart';
+import 'package:small_business_app/screen/edit_project_page.dart';
 import 'package:small_business_app/screen/project_expenses_page.dart';
 import 'package:small_business_app/widget/component.dart';
 import 'package:small_business_app/widget/custom_card.dart';
+import 'package:small_business_app/widget/custom_separator_line.dart';
 import 'package:small_business_app/widget/custom_text_button.dart';
 import 'package:small_business_app/widget/item_card.dart';
 
@@ -16,7 +18,10 @@ class ShowProjectPage extends StatelessWidget {
       required this.date,
       required this.client,
       required this.days,
-      required this.description});
+      required this.reminderDate,
+      required this.projectId,
+      required this.description,
+      required this.status});
   final String title;
   final String states;
   final String cost;
@@ -24,15 +29,42 @@ class ShowProjectPage extends StatelessWidget {
   final String client;
   final String description;
   final String days;
+  final int projectId;
+  final String reminderDate;
+  final String status;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: fillColor,
+      appBar: AppBar(
+        backgroundColor: primaryColor,
+        actions: [
+          IconButton(
+              onPressed: () {
+                navigateAndFinish(
+                    context: context,
+                    widget: EditProjectPage(
+                      projectName: title,
+                      description: description,
+                      data: date,
+                      cost: cost,
+                      reminderDate: reminderDate,
+                      status: status,
+                      projectId: "$projectId",
+                    ));
+              },
+              icon: Icon(
+                Icons.edit,
+                color: backgroundColor,
+                size: 20,
+              )),
+        ],
+      ),
       body: Stack(
         children: [
           Container(
-            height: 150.h,
+            height: 130.h,
             decoration: BoxDecoration(
               color: primaryColor,
               borderRadius: BorderRadius.only(
@@ -44,7 +76,7 @@ class ShowProjectPage extends StatelessWidget {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.only(top: 30.h, right: 7.w, left: 7.w),
+                  padding: EdgeInsets.only(right: 7.w, left: 7.w),
                   child: Column(
                     children: [
                       CustomCard(
@@ -64,7 +96,9 @@ class ShowProjectPage extends StatelessWidget {
                               onTap: () {
                                 navigateAndFinish(
                                     context: context,
-                                    widget: ProjectExpensesPage());
+                                    widget: ProjectExpensesPage(
+                                      id: projectId,
+                                    ));
                               },
                               child: CustomCard(
                                   item: Column(
@@ -116,7 +150,7 @@ class ShowProjectPage extends StatelessWidget {
                             spacing: 8,
                             children: [
                               Text(
-                                'المفكرة',
+                                'التفاصيل',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium
@@ -138,7 +172,6 @@ class ShowProjectPage extends StatelessWidget {
                   ),
                 ),
               ),
-
               SliverPadding(
                 padding: EdgeInsets.only(right: 17.w, left: 17.w, top: 7.h),
                 sliver: SliverToBoxAdapter(
@@ -162,52 +195,6 @@ class ShowProjectPage extends StatelessWidget {
                   ),
                 ),
               ),
-              // SliverList.separated(
-              //   itemCount: 3,
-              //   itemBuilder: (context, index) => Container(
-              //     color: backgroundColor,
-              //     child: Row(
-              //       children: [
-              //         CircleAvatar(
-              //           backgroundColor: primaryFont,
-              //           radius: 3,
-              //         ),
-              //         SizedBox(
-              //           width: 5.w,
-              //         ),
-              //         Text(
-              //           'هذه النص تجربي لا اكثر فقط للتجربة',
-              //           style: Theme.of(context)
-              //               .textTheme
-              //               .bodySmall
-              //               ?.copyWith(color: primaryFont),
-              //         ),
-              //         const Spacer(),
-              //         Text(
-              //           '55',
-              //           style: Theme.of(context)
-              //               .textTheme
-              //               .bodySmall
-              //               ?.copyWith(color: primaryFont),
-              //         ),
-              //         Icon(
-              //           Icons.attach_money,
-              //           color: primaryFont,
-              //           size: 18,
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              //   separatorBuilder: (context, index) => Padding(
-              //     padding: const EdgeInsets.all(15.0),
-              //     child: Container(
-              //       height: 1.h,
-              //       width: MediaQuery.sizeOf(context).width,
-              //       color: fillColor,
-              //     ),
-              //   ),
-              // ),
-
               SliverPadding(
                 padding: EdgeInsets.only(
                   right: 10.w,
@@ -254,15 +241,7 @@ class ShowProjectPage extends StatelessWidget {
                               ],
                             ),
                             if (index != 2) // لا تضف فاصل بعد العنصر الأخير
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10.0),
-                                child: Container(
-                                  height: 1.h,
-                                  width: double.infinity,
-                                  color: fillColor,
-                                ),
-                              ),
+                              CustomSeparatorLine(),
                           ],
                         );
                       }),
@@ -270,7 +249,6 @@ class ShowProjectPage extends StatelessWidget {
                   ),
                 ),
               ),
-
               SliverPadding(
                 padding: EdgeInsets.only(right: 10.w, left: 10.w, bottom: 15.h),
                 sliver: SliverToBoxAdapter(

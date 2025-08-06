@@ -53,13 +53,13 @@ class FireAuthenticationCubit extends Cubit<FireAuthenticationState> {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser != null) {
         // Obtain the auth details from the request
-        final GoogleSignInAuthentication? googlAuth =
+        final GoogleSignInAuthentication googlAuth =
             await googleUser.authentication;
 
         // Create a new credential
         final credential = GoogleAuthProvider.credential(
-          accessToken: googlAuth?.accessToken,
-          idToken: googlAuth?.idToken,
+          accessToken: googlAuth.accessToken,
+          idToken: googlAuth.idToken,
         );
 
         // Once signed in, return the UserCredential
@@ -67,7 +67,7 @@ class FireAuthenticationCubit extends Cubit<FireAuthenticationState> {
         emit(SingInGooglSuccessState());
       } else {
         print('================================================');
-        print('plese check google acount');
+        print('plese check google account');
       }
     } catch (e) {
       emit(SingInGooglErrorState(error: e.toString()));

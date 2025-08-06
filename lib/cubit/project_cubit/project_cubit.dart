@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:small_business_app/core/api/api_Consumer.dart';
+import 'package:small_business_app/core/api/api_consumer.dart';
 import 'package:small_business_app/core/api/end_point.dart';
 import 'package:small_business_app/core/cache/cache_helper.dart';
 import 'package:small_business_app/models/project_model.dart';
@@ -23,6 +23,7 @@ class ProjectCubit extends Cubit<ProjectState> {
   String? clientID;
 
   String status = 'قيد التنفيد';
+  String changeStatus = '';
 
   String? reminderDate;
   String? selectedClient;
@@ -32,6 +33,9 @@ class ProjectCubit extends Cubit<ProjectState> {
   bool inProgress = true;
   bool waiting = false;
   bool underReview = false;
+  bool done = false;
+  bool cancelled = false;
+  bool delivery = false;
   Map<String, String> outCost = {};
   List<String> tasks = [];
 
@@ -62,10 +66,10 @@ class ProjectCubit extends Cubit<ProjectState> {
           data: {
             'brandID': CacheHelper().getData(key: 'idBrand'),
             'clientID': clientID,
-            'name': name,
-            'description': description,
+            'name': name.text,
+            'description': description.text,
             'status': status,
-            'cost': cost,
+            'cost': cost.text,
             'date': date.text,
             'dateFinish': selectedReminderDate,
           },
@@ -93,6 +97,30 @@ class ProjectCubit extends Cubit<ProjectState> {
       emit(GetProjectSuccessState(projectModel: projectList));
     } catch (e) {
       emit(GetProjectErrorState(error: e.toString()));
+    }
+  }
+
+  patchProject(
+      {required String projectId,
+      required String name,
+      required String date,
+      required String remendDate,
+      required String cost,
+      required String description,
+      required String status}) async {
+    try {
+      emit(PatchProjectLoadingState());
+      await api.patch(url: "$projectEndPoint/$projectId", data: {
+        'name': name,
+        'description': description,
+        'status': status,
+        'cost': cost,
+        'date': date,
+        'dateFinish': remendDate,
+      });
+      emit(PatchProjectSuccessState());
+    } catch (e) {
+      emit(PatchProjectErrorState(error: e.toString()));
     }
   }
 
@@ -148,22 +176,60 @@ class ProjectCubit extends Cubit<ProjectState> {
     emit(GetIdeClientSuccessState());
   }
 
-  void upDateStatus() {
-    if (status == 'قيد التنفيد') {
+  void upDateStatus(String statusValue) {
+    if (statusValue == 'قيد التنفيد') {
       inProgress = true;
       waiting = false;
       underReview = false;
+      done = false;
+      cancelled = false;
+      delivery = false;
 
       emit(GetChangeStatusSuccessState());
-    } else if (status == 'تحت الانتظار') {
+    } else if (statusValue == 'تحت الانتظار') {
       inProgress = false;
       waiting = true;
       underReview = false;
+      done = false;
+      cancelled = false;
+      delivery = false;
+
+      emit(GetChangeStatusSuccessState());
+    } else if (statusValue == ' ثم الالغاء') {
+      inProgress = false;
+      waiting = false;
+      underReview = false;
+      done = false;
+      cancelled = true;
+      delivery = false;
+
+      emit(GetChangeStatusSuccessState());
+    } else if (statusValue == ' ثم التسليم') {
+      inProgress = false;
+      waiting = false;
+      underReview = false;
+      done = false;
+      cancelled = false;
+      delivery = true;
+
+      emit(GetChangeStatusSuccessState());
+    } else if (statusValue == 'مكتمل ') {
+      inProgress = false;
+      waiting = false;
+      underReview = false;
+      done = true;
+      cancelled = false;
+      delivery = false;
+
       emit(GetChangeStatusSuccessState());
     } else {
       inProgress = false;
       waiting = false;
       underReview = true;
+      done = false;
+      cancelled = false;
+      delivery = false;
+
       emit(GetChangeStatusSuccessState());
     }
   }
@@ -195,7 +261,6 @@ class ProjectCubit extends Cubit<ProjectState> {
               })));
       emit(PostAllTasksCostSuccessState());
     } catch (e) {
-      print('.............................' + e.toString());
       emit(PostAllTasksErrorState(error: e.toString()));
     }
   }

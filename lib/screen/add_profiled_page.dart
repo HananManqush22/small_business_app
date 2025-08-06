@@ -35,8 +35,7 @@ class AddProfiledPage extends StatelessWidget {
                 preferredSize: Size.fromHeight(60.h),
                 child: CustomAppBar(
                     isLoading: state is PostProfileStateLoadingState,
-                    title: " اضافة ",
-                    closeFunction: () {},
+                    title: " تعديل طلب ",
                     addFunction: () async {
                       if (cubit.formKey.currentState!.validate()) {
                         cubit.formKey.currentState!.save();

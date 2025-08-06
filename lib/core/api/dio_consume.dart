@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:small_business_app/core/api/api_Consumer.dart';
+import 'package:small_business_app/core/api/api_consumer.dart';
 import 'package:small_business_app/core/api/api_interceptors.dart';
 import 'package:small_business_app/core/api/end_point.dart';
 import 'package:small_business_app/core/errors/exception.dart';

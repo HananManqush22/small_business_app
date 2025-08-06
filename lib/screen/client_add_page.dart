@@ -18,11 +18,6 @@ class ClientAddPage extends StatelessWidget {
           print('................................loding');
         } else if (state is AddClientSuccessState) {
           Navigator.pop(context);
-          // navigateAndReplacement(
-          //     context: context,
-          //     widget: const NavigationBarPage(
-          //       selectedIndex: 4,
-          //     ));
         } else if (state is AddClientErrorState) {
           print('................................${state.error.toString()}');
         }
@@ -38,7 +33,6 @@ class ClientAddPage extends StatelessWidget {
                 child: CustomAppBar(
                     isLoading: state is AddClientLoadingState,
                     title: " اضافة عميل",
-                    closeFunction: () {},
                     addFunction: () async {
                       if (cubit.formKey.currentState!.validate()) {
                         await cubit.postClint();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:small_business_app/core/api/api_Consumer.dart';
+import 'package:small_business_app/core/api/api_consumer.dart';
 import 'package:small_business_app/core/api/end_point.dart';
 
 part 'ideas_state.dart';
@@ -29,7 +29,7 @@ class IdeasCubit extends Cubit<IdeasState> {
   getIdeas() async {
     try {
       emit(GetIdeaStateLoadingState());
-      var response = await api.get(
+      await api.get(
         url: ideaEndPoint,
       );
 
