@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:small_business_app/core/api/api_consumer.dart';
@@ -10,27 +11,34 @@ class ClientsCubit extends Cubit<ClientsState> {
   ClientsCubit(this.api) : super(ClientsInitial());
   final ApiConsumer api;
   static ClientsCubit get(context) => BlocProvider.of(context);
-  var formKey = GlobalKey<FormState>();
-  TextEditingController name = TextEditingController();
-  TextEditingController email = TextEditingController();
-  TextEditingController phone = TextEditingController();
-  TextEditingController address = TextEditingController();
-  TextEditingController description = TextEditingController();
 
-  postClint() async {
+  postClint(
+      {required String name,
+      required String email,
+      required String phone,
+      required String address,
+      required String description}) async {
     try {
       emit(AddClientLoadingState());
-      await api.post(
+      var response = await api.post(
           url: clientEndPoint,
           data: {
-            'name': name.text,
-            'email': email.text,
-            'phone': phone.text,
-            'address': address.text,
-            'description': description.text,
+            'name': name,
+            'email': email,
+            'phone': phone,
+            'address': address,
+            'description': description,
           },
           isFormData: true);
-
+      ClientData newClient = ClientData(
+        address: address,
+        name: name,
+        email: email,
+        phone: phone,
+        description: description,
+        id: response['idClient'],
+      );
+      clients.add(newClient);
       emit(AddClientSuccessState());
     } catch (e) {
       emit(AddClientErrorState(error: e.toString()));
@@ -44,14 +52,17 @@ class ClientsCubit extends Cubit<ClientsState> {
         emit(GetClientSuccessState(clientModel: clients));
         return;
       }
-      emit(GetClientLoadingState());
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        emit(GetClientLoadingState());
 
-      var response = await api.get(
-        url: clientEndPoint,
-      );
-      ClientModel clientModel = ClientModel.fromJson(response);
-      clients = clientModel.data ?? [];
-      emit(GetClientSuccessState(clientModel: clients));
+        var response = await api.get(
+          url: clientEndPoint,
+        );
+        ClientModel clientModel = ClientModel.fromJson(response);
+        clients = clientModel.data ?? [];
+        emit(GetClientSuccessState(clientModel: clients));
+      }
     } catch (e) {
       emit(GetClientErrorState(error: e.toString()));
     }

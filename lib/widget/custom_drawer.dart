@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:small_business_app/configuration/colors.dart';
 import 'package:small_business_app/screen/ideas_page.dart';
 import 'package:small_business_app/screen/show_profiled_page.dart';
+import 'package:small_business_app/screen/create_user_page.dart';
+import 'package:small_business_app/screen/sing_in_page.dart';
 import 'package:small_business_app/widget/component.dart';
 import 'package:small_business_app/widget/drawer_item.dart';
 
@@ -45,7 +49,11 @@ class CustomDrawer extends StatelessWidget {
             DrawerItem(
               title: 'تسجيل الخروج',
               icon: Icons.logout,
-              onTap: () {},
+              onTap: () async {
+                await signOutUser();
+                navigateAndReplacement(
+                    context: context, widget: const SingInPage());
+              },
             ),
             DrawerItem(
               title: 'تواصل معنا',
@@ -71,12 +79,23 @@ class CustomDrawer extends StatelessWidget {
         ));
   }
 }
-// CustomTextButton(
-//           title: 'البراند',
-//           textStyle: Theme.of(context)
-//               .textTheme
-//               .bodyLarge
-//               ?.copyWith(color: backgroundColor),
-//           onPressed: () {
-//             navigateAndFinish(context: context, widget: ShowProfiledPage());
-//           }),
+
+Future<void> signOutUser() async {
+  try {
+    // تسجيل الخروج من Google (إن كان مستخدمًا)
+    final googleSignIn = GoogleSignIn();
+    if (await googleSignIn.isSignedIn()) {
+      await googleSignIn.signOut();
+    }
+
+    // تسجيل الخروج من Facebook (إن كان مستخدمًا)
+    // await FacebookAuth.instance.logOut();
+
+    // تسجيل الخروج من Firebase
+    await FirebaseAuth.instance.signOut();
+
+    print("تم تسجيل الخروج بنجاح");
+  } catch (e) {
+    print("حدث خطأ أثناء تسجيل الخروج: $e");
+  }
+}

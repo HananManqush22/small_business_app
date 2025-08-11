@@ -1,19 +1,19 @@
 class ProjectModel {
-  List<Data>? data;
+  List<ProjectData>? data;
 
   ProjectModel({this.data});
 
   ProjectModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <ProjectData>[];
       json['data'].forEach((v) {
-        data!.add(Data.fromJson(v));
+        data!.add(ProjectData.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = {};
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -21,7 +21,7 @@ class ProjectModel {
   }
 }
 
-class Data {
+class ProjectData {
   int? id;
   int? brandID;
   int? clientID;
@@ -34,7 +34,7 @@ class Data {
   String? createAt;
   String? updateAt;
 
-  Data(
+  ProjectData(
       {this.id,
       this.brandID,
       this.clientID,
@@ -47,7 +47,7 @@ class Data {
       this.createAt,
       this.updateAt});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  ProjectData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     brandID = json['brandID'];
     clientID = json['clientID'];
@@ -62,7 +62,7 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = {};
     data['id'] = id;
     data['brandID'] = brandID;
     data['clientID'] = clientID;

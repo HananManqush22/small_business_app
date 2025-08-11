@@ -26,6 +26,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
   @override
   void initState() {
     super.initState();
+
     currentIndex = widget.selectedIndex;
   }
 

@@ -18,6 +18,7 @@ class EditProjectPage extends StatefulWidget {
       required this.cost,
       required this.reminderDate,
       required this.status,
+      required this.clientId,
       required this.projectId});
   final String projectName;
   final String description;
@@ -26,6 +27,7 @@ class EditProjectPage extends StatefulWidget {
   final String reminderDate;
   final String status;
   final String projectId;
+  final int clientId;
 
   @override
   State<EditProjectPage> createState() => _EditProjectPageState();
@@ -82,7 +84,8 @@ class _EditProjectPageState extends State<EditProjectPage> {
                             description: descriptionController.text.isEmpty
                                 ? widget.description
                                 : descriptionController.text,
-                            status: cubit.changeStatus);
+                            status: cubit.changeStatus,
+                            clientId: widget.clientId);
                       })),
               body: CustomBackground(
                   item: SingleChildScrollView(

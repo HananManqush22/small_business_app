@@ -31,7 +31,7 @@ class ProjectExpensesCubit extends Cubit<ProjectExpensesState> {
     try {
       emit(PostOutCostLoadingState());
 
-      var response = await api.post(url: outCostEndPoint, data: {
+      await api.post(url: outCostEndPoint, data: {
         'projectID': projectId,
         'amount': amount,
         'description': description,

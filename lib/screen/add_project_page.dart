@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:small_business_app/configuration/colors.dart';
+import 'package:small_business_app/configuration/validators.dart';
 import 'package:small_business_app/cubit/clients_cubit/clients_cubit.dart';
 import 'package:small_business_app/cubit/project_cubit/project_cubit.dart';
 import 'package:small_business_app/widget/custom_app_bar.dart';
@@ -11,32 +12,21 @@ import 'package:small_business_app/widget/custom_background.dart';
 import 'package:small_business_app/widget/custom_button_click.dart';
 import 'package:small_business_app/widget/custom_text_file.dart';
 
-class AddProjectPage extends StatefulWidget {
+class AddProjectPage extends StatelessWidget {
   const AddProjectPage({super.key});
 
-  @override
-  State<AddProjectPage> createState() => _AddProjectPageState();
-}
-
-class _AddProjectPageState extends State<AddProjectPage> {
-  @override
-  void initState() {
-    super.initState();
-
-    ClientsCubit.get(context).getClint();
-  }
-
+  // @override
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ProjectCubit, ProjectState>(
-      listener: (context, state) {},
-      builder: (context, state) {
-        var cubit = ProjectCubit.get(context);
-        return Scaffold(
-          backgroundColor: primaryColor,
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(60.h),
-            child: CustomAppBar(
+    var cubit = ProjectCubit.get(context);
+
+    return Scaffold(
+      backgroundColor: primaryColor,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60.h),
+        child: BlocBuilder<ProjectCubit, ProjectState>(
+          builder: (context, state) {
+            return CustomAppBar(
               title: "انشاء مشروع",
               isLoading: state is PostProjectLoadingState,
               addFunction: () async {
@@ -46,105 +36,102 @@ class _AddProjectPageState extends State<AddProjectPage> {
                   cubit.description.clear();
                   cubit.cost.clear();
                   cubit.date.clear();
+                  cubit.outCost.clear();
+                  cubit.tasks.clear();
                 }
               },
-            ),
-          ),
-          body: CustomBackground(
-              item: Form(
-            key: cubit.formKey,
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Column(
-                    spacing: 8,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomTextFiled(
-                          hint: 'اسم المشروع',
-                          controller: cubit.name,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'هذا الحقل مطلوب';
-                            }
-                            return null;
-                          }),
-                      BlocBuilder<ClientsCubit, ClientsState>(
-                        buildWhen: (previous, current) =>
-                            current is GetClientSuccessState,
-                        builder: (context, state) {
-                          return DropdownButtonHideUnderline(
-                              child: state is GetClientSuccessState
-                                  ? DropdownButton2(
-                                      items: state.clientModel
-                                          .map((item) => DropdownMenuItem(
-                                                value: item.id.toString(),
-                                                child: Text('${item.name}',
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodyMedium),
-                                              ))
-                                          .toList(),
-                                      buttonStyleData: ButtonStyleData(
-                                        height: 52.h,
-                                        decoration: BoxDecoration(
-                                          color: fillColor,
-                                          borderRadius:
-                                              BorderRadius.circular(18),
-                                          border: Border.all(
-                                            color: fillColor,
-                                            width: 1,
-                                          ),
-                                        ),
-                                      ),
-                                      dropdownStyleData:
-                                          const DropdownStyleData(
-                                        decoration: BoxDecoration(
-                                            color: backgroundColor,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(12))),
-                                      ),
-                                      menuItemStyleData: MenuItemStyleData(
-                                        height: 30,
-                                      ),
-                                      isExpanded: true,
-                                      disabledHint: Text(
-                                        'القائمة غير متاحة',
+            );
+          },
+        ),
+      ),
+      body: CustomBackground(
+          item: Form(
+        key: cubit.formKey,
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Column(
+                spacing: 8,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomTextFiled(
+                      hint: 'اسم المشروع',
+                      controller: cubit.name,
+                      validator: (value) => requiredFieldValidator(value)),
+                  BlocBuilder<ProjectCubit, ProjectState>(
+                    builder: (context, state) {
+                      return DropdownButtonHideUnderline(
+                        child: DropdownButton2(
+                          items: ClientsCubit.get(context)
+                              .clients
+                              .map((item) => DropdownMenuItem(
+                                    value: item.id.toString(),
+                                    child: Text('${item.name}',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .labelMedium
-                                            ?.copyWith(color: fontColor),
-                                      ),
-                                      hint: Text(
-                                        'اختار عميل',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelMedium
-                                            ?.copyWith(color: primaryColor),
-                                      ),
-                                      value: cubit.clientID,
-                                      onChanged: (value) {
-                                        cubit.updateClientID(value.toString());
-                                      },
-                                    )
-                                  : Container());
-                        },
-                      ),
-                      CustomTextFiled(
-                        hint: 'مذكرة',
-                        maxLine: 4,
-                        controller: cubit.description,
-                      ),
-                      Text(
-                        'مهام المشروع',
-                        style: (Theme.of(context).textTheme.bodyLarge ??
-                                TextStyle(fontSize: 16))
-                            .copyWith(color: primaryColor),
-                      ),
-                    ],
+                                            .bodyMedium),
+                                  ))
+                              .toList(),
+                          buttonStyleData: ButtonStyleData(
+                            height: 52.h,
+                            decoration: BoxDecoration(
+                              color: fillColor,
+                              borderRadius: BorderRadius.circular(18),
+                              border: Border.all(
+                                color: fillColor,
+                                width: 1,
+                              ),
+                            ),
+                          ),
+                          dropdownStyleData: const DropdownStyleData(
+                            decoration: BoxDecoration(
+                                color: backgroundColor,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(12))),
+                          ),
+                          menuItemStyleData: MenuItemStyleData(
+                            height: 30,
+                          ),
+                          isExpanded: true,
+                          disabledHint: Text(
+                            ' اضف عملاء,القائمة غير متاحة',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium
+                                ?.copyWith(color: fontColor),
+                          ),
+                          hint: Text(
+                            'اختار عميل',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium
+                                ?.copyWith(color: primaryColor),
+                          ),
+                          value: cubit.clientID,
+                          onChanged: (value) {
+                            cubit.updateClientID(value.toString());
+                          },
+                        ),
+                      );
+                    },
                   ),
-                ),
-                SliverList.separated(
+                  CustomTextFiled(
+                    hint: 'مذكرة',
+                    maxLine: 4,
+                    controller: cubit.description,
+                  ),
+                  Text(
+                    'مهام المشروع',
+                    style: (Theme.of(context).textTheme.bodyLarge ??
+                            TextStyle(fontSize: 16))
+                        .copyWith(color: primaryColor),
+                  ),
+                ],
+              ),
+            ),
+            BlocBuilder<ProjectCubit, ProjectState>(
+              builder: (context, state) {
+                return SliverList.separated(
                   itemCount: cubit.tasks.length,
                   itemBuilder: (context, index) {
                     return Row(
@@ -182,45 +169,49 @@ class _AddProjectPageState extends State<AddProjectPage> {
                     width: MediaQuery.sizeOf(context).width,
                     color: fillColor,
                   ),
-                ),
-                SliverToBoxAdapter(
-                  child: Row(
-                    children: [
-                      Expanded(
-                          child: CustomTextFiled(
-                        hint: 'اكتب هنا',
-                        controller: cubit.task,
-                      )),
-                      IconButton(
-                        onPressed: () {
-                          if (cubit.task.text.isNotEmpty) {
-                            cubit.addTask(cubit.task.text);
-                            cubit.task.clear();
-                          } else {
-                            print('................the field is requerd');
-                          }
-                        },
-                        icon: Icon(
-                          Icons.check,
-                          color: primaryColor,
-                          size: 25,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 15),
-                    child: Text(
-                      'مصروفات المشروع',
-                      style: (Theme.of(context).textTheme.bodyLarge ??
-                              TextStyle(fontSize: 16))
-                          .copyWith(color: primaryColor),
+                );
+              },
+            ),
+            SliverToBoxAdapter(
+              child: Row(
+                children: [
+                  Expanded(
+                      child: CustomTextFiled(
+                    hint: 'اكتب هنا',
+                    controller: cubit.task,
+                  )),
+                  IconButton(
+                    onPressed: () {
+                      if (cubit.task.text.isNotEmpty) {
+                        cubit.addTask(cubit.task.text);
+                        cubit.task.clear();
+                      } else {
+                        print('................the field is requerd');
+                      }
+                    },
+                    icon: Icon(
+                      Icons.check,
+                      color: primaryColor,
+                      size: 25,
                     ),
                   ),
+                ],
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 15),
+                child: Text(
+                  'مصروفات المشروع',
+                  style: (Theme.of(context).textTheme.bodyLarge ??
+                          TextStyle(fontSize: 16))
+                      .copyWith(color: primaryColor),
                 ),
-                SliverPadding(
+              ),
+            ),
+            BlocBuilder<ProjectCubit, ProjectState>(
+              builder: (context, state) {
+                return SliverPadding(
                   padding: EdgeInsets.all(15),
                   sliver: SliverList.separated(
                     itemCount: cubit.outCost.length,
@@ -268,60 +259,59 @@ class _AddProjectPageState extends State<AddProjectPage> {
                       ),
                     ),
                   ),
-                ),
-                SliverToBoxAdapter(
-                  child: Column(
-                    spacing: 10.h,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                );
+              },
+            ),
+            SliverToBoxAdapter(
+              child: Column(
+                spacing: 10.h,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                              child: CustomTextFiled(
-                            hint: 'اكتب هنا',
-                            controller: cubit.outCostDescription,
-                          )),
-                          SizedBox(
-                            width: 8.w,
-                          ),
-                          SizedBox(
-                            width: 90.w,
-                            child: CustomTextFiled(
-                              hint: '0',
-                              controller: cubit.outCostValue,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              if (cubit.outCostDescription.text.isNotEmpty &&
-                                  cubit.outCostValue.text.isNotEmpty) {
-                                cubit.addOutCost(cubit.outCostDescription.text,
-                                    cubit.outCostValue.text);
-                                cubit.outCostDescription.clear();
-                                cubit.outCostValue.clear();
-                              } else {
-                                print(
-                                    '........................the value is requerd');
-                              }
-                            },
-                            icon: Icon(
-                              Icons.check,
-                              color: primaryColor,
-                              size: 25,
-                            ),
-                          ),
-                        ],
+                      Expanded(
+                          child: CustomTextFiled(
+                        hint: 'اكتب هنا',
+                        controller: cubit.outCostDescription,
+                      )),
+                      SizedBox(
+                        width: 8.w,
                       ),
-                      CustomTextFiled(
-                          hint: 'قيمة المشروع',
-                          controller: cubit.cost,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'هذا الحقل مطلوب';
-                            }
-                            return null;
-                          }),
-                      Row(
+                      SizedBox(
+                        width: 90.w,
+                        child: CustomTextFiled(
+                          hint: '0',
+                          controller: cubit.outCostValue,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          if (cubit.outCostDescription.text.isNotEmpty &&
+                              cubit.outCostValue.text.isNotEmpty) {
+                            cubit.addOutCost(cubit.outCostDescription.text,
+                                cubit.outCostValue.text);
+                            cubit.outCostDescription.clear();
+                            cubit.outCostValue.clear();
+                          } else {
+                            print(
+                                '........................the value is requerd');
+                          }
+                        },
+                        icon: Icon(
+                          Icons.check,
+                          color: primaryColor,
+                          size: 25,
+                        ),
+                      ),
+                    ],
+                  ),
+                  CustomTextFiled(
+                      hint: 'قيمة المشروع',
+                      controller: cubit.cost,
+                      validator: (value) => requiredFieldValidator(value)),
+                  BlocBuilder<ProjectCubit, ProjectState>(
+                    builder: (context, state) {
+                      return Row(
                         spacing: 10.w,
                         children: [
                           Expanded(
@@ -390,14 +380,18 @@ class _AddProjectPageState extends State<AddProjectPage> {
                             ),
                           )
                         ],
-                      ),
-                      Text(
-                        'حالة المشروع',
-                        style: (Theme.of(context).textTheme.bodyLarge ??
-                                TextStyle(fontSize: 16))
-                            .copyWith(color: primaryColor),
-                      ),
-                      Row(
+                      );
+                    },
+                  ),
+                  Text(
+                    'حالة المشروع',
+                    style: (Theme.of(context).textTheme.bodyLarge ??
+                            TextStyle(fontSize: 16))
+                        .copyWith(color: primaryColor),
+                  ),
+                  BlocBuilder<ProjectCubit, ProjectState>(
+                    builder: (context, state) {
+                      return Row(
                         spacing: 10.w,
                         children: [
                           Expanded(
@@ -428,15 +422,15 @@ class _AddProjectPageState extends State<AddProjectPage> {
                                         cubit.status = 'تحت المراجعة');
                                   })),
                         ],
-                      )
-                    ],
-                  ),
-                ),
-              ],
+                      );
+                    },
+                  )
+                ],
+              ),
             ),
-          )),
-        );
-      },
+          ],
+        ),
+      )),
     );
   }
 }

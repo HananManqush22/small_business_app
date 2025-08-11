@@ -35,7 +35,7 @@ class GitProjectErrorState extends ProjectState {
 class GetProjectLoadingState extends ProjectState {}
 
 class GetProjectSuccessState extends ProjectState {
-  final List<Data> projectModel;
+  final List<ProjectData> projectModel;
   GetProjectSuccessState({required this.projectModel});
 }
 
@@ -77,3 +77,17 @@ class TasksUpdatedState extends ProjectState {}
 class RemoveTaskedState extends ProjectState {}
 
 class ChangIndexState extends ProjectState {}
+
+class PostBrandSuccessState extends ProjectState {}
+
+class PostBrandErrorState extends ProjectState {
+  final String error;
+  PostBrandErrorState({required this.error});
+}
+
+class GetBrandSuccessState extends ProjectState {}
+
+class GetBrandErrorState extends ProjectState {
+  final String error;
+  GetBrandErrorState({required this.error});
+}

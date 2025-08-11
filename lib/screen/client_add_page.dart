@@ -24,8 +24,14 @@ class ClientAddPage extends StatelessWidget {
       },
       builder: (context, state) {
         var cubit = ClientsCubit.get(context);
+        var formKey = GlobalKey<FormState>();
+        TextEditingController name = TextEditingController();
+        TextEditingController email = TextEditingController();
+        TextEditingController phone = TextEditingController();
+        TextEditingController address = TextEditingController();
+        TextEditingController description = TextEditingController();
         return Form(
-          key: cubit.formKey,
+          key: formKey,
           child: Scaffold(
             backgroundColor: primaryColor,
             appBar: PreferredSize(
@@ -34,54 +40,56 @@ class ClientAddPage extends StatelessWidget {
                     isLoading: state is AddClientLoadingState,
                     title: " اضافة عميل",
                     addFunction: () async {
-                      if (cubit.formKey.currentState!.validate()) {
-                        await cubit.postClint();
-                        cubit.name.clear();
-                        cubit.phone.clear();
-                        cubit.email.clear();
-                        cubit.address.clear();
-                        cubit.description.clear();
+                      if (formKey.currentState!.validate()) {
+                        await cubit.postClint(
+                            name: name.text,
+                            email: email.text,
+                            phone: phone.text,
+                            address: address.text,
+                            description: description.text);
                       }
                     })),
             body: CustomBackground(
-              item: Column(
-                spacing: 10,
-                children: [
-                  CustomTextFiled(
-                    hint: 'اسم العميل',
-                    controller: cubit.name,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'اسم العميل مطلوب';
-                      }
-                      return null;
-                    },
-                  ),
-                  CustomTextFiled(
-                    hint: 'رقم الهاتف',
-                    controller: cubit.phone,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'رقم الهاتف مطلوب';
-                      }
-                      return null;
-                    },
-                  ),
-                  CustomTextFiled(
-                    hint: 'الايميل',
-                    controller: cubit.email,
-                  ),
-                  CustomTextFiled(
-                    hint: 'العنوان',
-                    maxLine: 2,
-                    controller: cubit.address,
-                  ),
-                  CustomTextFiled(
-                    hint: 'مذكرة',
-                    maxLine: 3,
-                    controller: cubit.description,
-                  ),
-                ],
+              item: SingleChildScrollView(
+                child: Column(
+                  spacing: 10,
+                  children: [
+                    CustomTextFiled(
+                      hint: 'اسم العميل',
+                      controller: name,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'اسم العميل مطلوب';
+                        }
+                        return null;
+                      },
+                    ),
+                    CustomTextFiled(
+                      hint: 'رقم الهاتف',
+                      controller: phone,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'رقم الهاتف مطلوب';
+                        }
+                        return null;
+                      },
+                    ),
+                    CustomTextFiled(
+                      hint: 'الايميل',
+                      controller: email,
+                    ),
+                    CustomTextFiled(
+                      hint: 'العنوان',
+                      maxLine: 2,
+                      controller: address,
+                    ),
+                    CustomTextFiled(
+                      hint: 'مذكرة',
+                      maxLine: 3,
+                      controller: description,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

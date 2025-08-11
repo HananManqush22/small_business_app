@@ -44,21 +44,31 @@ class StatisticallyPage extends StatelessWidget {
                   ),
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  children: const [
+                  children: [
                     CustomStatCard(
-                        title: 'إجمالي الطلبات',
-                        icon: Icons.list_alt,
-                        number: "123"),
+                      title: 'إجمالي الطلبات',
+                      icon: Icons.list_alt,
+                      number: "123",
+                      iconColor: primaryColor,
+                    ),
                     CustomStatCard(
-                        title: 'المنجزة',
-                        icon: Icons.check_circle,
-                        number: '95'),
+                      title: 'المنجزة',
+                      icon: Icons.check_circle,
+                      number: '95',
+                      iconColor: Colors.lightGreen,
+                    ),
                     CustomStatCard(
-                        title: 'قيد التنفيذ',
-                        icon: Icons.pending_actions,
-                        number: "25"),
+                      title: 'قيد التنفيذ',
+                      icon: Icons.pending_actions,
+                      number: "25",
+                      iconColor: primaryColor,
+                    ),
                     CustomStatCard(
-                        title: 'ملغاة', icon: Icons.cancel, number: '3'),
+                      title: 'ملغاة',
+                      icon: Icons.cancel,
+                      number: '3',
+                      iconColor: Colors.red,
+                    ),
                   ],
                 ),
                 CustomCard(

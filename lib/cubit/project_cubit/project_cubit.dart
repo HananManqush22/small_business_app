@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -8,10 +9,13 @@ import 'package:small_business_app/models/project_model.dart';
 part 'project_state.dart';
 
 class ProjectCubit extends Cubit<ProjectState> {
-  ProjectCubit(this.api) : super(ProjectInitial());
+  ProjectCubit(this.api) : super(ProjectInitial()) {
+    initializeBrand();
+  }
   ApiConsumer api;
   static ProjectCubit get(context) => BlocProvider.of(context);
 
+  String? clientID;
   TextEditingController date = TextEditingController();
   TextEditingController outCostDescription = TextEditingController();
   TextEditingController outCostValue = TextEditingController();
@@ -19,8 +23,7 @@ class ProjectCubit extends Cubit<ProjectState> {
   TextEditingController name = TextEditingController();
   TextEditingController description = TextEditingController();
   TextEditingController cost = TextEditingController();
-
-  String? clientID;
+  var formKey = GlobalKey<FormState>();
 
   String status = 'قيد التنفيد';
   String changeStatus = '';
@@ -39,7 +42,6 @@ class ProjectCubit extends Cubit<ProjectState> {
   Map<String, String> outCost = {};
   List<String> tasks = [];
 
-  var formKey = GlobalKey<FormState>();
   void addOutCost(String description, String value) {
     outCost[description] = value;
     emit(OutCostUpdatedState());
@@ -74,27 +76,44 @@ class ProjectCubit extends Cubit<ProjectState> {
             'dateFinish': selectedReminderDate,
           },
           isFormData: true);
+      ProjectData newProject = ProjectData(
+        id: response['idProject'],
+        name: name.text,
+        clientID: int.parse(clientID!),
+        description: description.text,
+        status: status,
+        cost: cost.text,
+        date: date.text,
+        remendDate: selectedReminderDate,
+      );
+      projectList.add(newProject);
+      if (outCost.isNotEmpty) {
+        await postAllOutCost(response['idProject'].toString());
+      } else if (tasks.isNotEmpty) {
+        await postAllTasks(response['idProject'].toString());
+      }
 
-      await postAllOutCost(response['idProject'].toString());
-      await postAllTasks(response['idProject'].toString());
       emit(PostProjectSuccessState());
     } catch (e) {
       emit(PostProjectErrorState(error: e.toString()));
     }
   }
 
-  List<Data> projectList = [];
+  List<ProjectData> projectList = [];
   getProject() async {
     try {
       if (projectList.isNotEmpty) {
         emit(GetProjectSuccessState(projectModel: projectList));
         return;
       }
-      emit(GetProjectLoadingState());
-      var response = await api.get(url: projectEndPoint);
-      ProjectModel projectModel = ProjectModel.fromJson(response);
-      projectList = projectModel.data ?? [];
-      emit(GetProjectSuccessState(projectModel: projectList));
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        emit(GetProjectLoadingState());
+        var response = await api.get(url: projectEndPoint);
+        ProjectModel projectModel = ProjectModel.fromJson(response);
+        projectList = projectModel.data ?? [];
+        emit(GetProjectSuccessState(projectModel: projectList));
+      }
     } catch (e) {
       emit(GetProjectErrorState(error: e.toString()));
     }
@@ -107,10 +126,11 @@ class ProjectCubit extends Cubit<ProjectState> {
       required String remendDate,
       required String cost,
       required String description,
-      required String status}) async {
+      required String status,
+      required int clientId}) async {
     try {
       emit(PatchProjectLoadingState());
-      await api.patch(url: "$projectEndPoint/$projectId", data: {
+      var response = await api.patch(url: "$projectEndPoint/$projectId", data: {
         'name': name,
         'description': description,
         'status': status,
@@ -118,6 +138,20 @@ class ProjectCubit extends Cubit<ProjectState> {
         'date': date,
         'dateFinish': remendDate,
       });
+      ProjectData upDateProject = ProjectData(
+        id: response['idProject'],
+        clientID: clientId,
+        name: name,
+        description: description,
+        status: status,
+        cost: cost,
+        date: date,
+        remendDate: remendDate,
+      );
+      int index = projectList.indexWhere((item) => item.id == upDateProject.id);
+      if (index != -1) {
+        projectList[index] = upDateProject;
+      }
       emit(PatchProjectSuccessState());
     } catch (e) {
       emit(PatchProjectErrorState(error: e.toString()));
@@ -271,7 +305,7 @@ class ProjectCubit extends Cubit<ProjectState> {
     emit(ChangIndexState());
   }
 
-  List<Data> getFilteredStatus(String status) {
+  List<ProjectData> getFilteredStatus(String status) {
     if (status == 'الكل') return projectList;
     return projectList.where((test) => test.status == status).toList();
   }
@@ -300,6 +334,49 @@ class ProjectCubit extends Cubit<ProjectState> {
       return remainingDays < 0 ? 0 : remainingDays;
     } else {
       return 0;
+    }
+  }
+
+  Future<void> initializeBrand() async {
+    try {
+      final cache = CacheHelper();
+      final idBrand = cache.getData(key: 'idBrand');
+
+      if (idBrand != null) {
+        emit(GetBrandSuccessState());
+        return;
+      }
+
+      final getResponse = await api.get(url: brandEndPoint);
+
+      if (getResponse != null && getResponse['idBrand'] != null) {
+        final String brandId = getResponse['idBrand'].toString();
+        cache.saveData(key: 'idBrand', value: brandId);
+        emit(GetBrandSuccessState());
+      } else {
+        await postBrand();
+      }
+    } catch (e) {
+      emit(GetBrandErrorState(error: e.toString()));
+    }
+  }
+
+  Future<void> postBrand() async {
+    try {
+      final postResponse = await api.post(
+        url: brandEndPoint,
+        data: {'name': '..'},
+        isFormData: true,
+      );
+
+      final String brandId = postResponse['idBrand'].toString();
+      CacheHelper().saveData(key: 'idBrand', value: brandId);
+
+      emit(PostBrandSuccessState());
+      emit(GetBrandSuccessState());
+    } catch (e) {
+      emit(PostBrandErrorState(error: e.toString()));
+      emit(GetBrandErrorState(error: 'فشل في إنشاء العلامة التجارية'));
     }
   }
 }

@@ -113,7 +113,7 @@ class HomePage extends StatelessWidget {
                               Expanded(
                                 child: BlocBuilder<ProjectCubit, ProjectState>(
                                   builder: (context, state) {
-                                    List<Data> filterProject =
+                                    List<ProjectData> filterProject =
                                         cubit.getFilteredStatus(
                                             items[cubit.selectedIndex]);
 
@@ -163,6 +163,8 @@ class HomePage extends StatelessWidget {
                                                     projectId: projectItem.id!,
                                                     status:
                                                         '${projectItem.status}',
+                                                    clientId:
+                                                        projectItem.clientID!,
                                                   ),
                                                 );
                                               },

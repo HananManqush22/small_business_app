@@ -21,6 +21,7 @@ class ShowProjectPage extends StatelessWidget {
       required this.reminderDate,
       required this.projectId,
       required this.description,
+      required this.clientId,
       required this.status});
   final String title;
   final String states;
@@ -32,7 +33,7 @@ class ShowProjectPage extends StatelessWidget {
   final int projectId;
   final String reminderDate;
   final String status;
-
+  final int clientId;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,6 +53,7 @@ class ShowProjectPage extends StatelessWidget {
                       reminderDate: reminderDate,
                       status: status,
                       projectId: "$projectId",
+                      clientId: clientId,
                     ));
               },
               icon: Icon(

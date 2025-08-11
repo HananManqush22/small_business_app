@@ -12,7 +12,7 @@ import 'package:small_business_app/cubit/clients_cubit/clients_cubit.dart';
 import 'package:small_business_app/cubit/project_cubit/project_cubit.dart';
 import 'package:small_business_app/cubit/simple_observer_bloc.dart';
 import 'package:small_business_app/firebase_options.dart';
-import 'package:small_business_app/screen/log_in_page.dart';
+import 'package:small_business_app/screen/sing_in_page.dart';
 import 'package:small_business_app/screen/navigation_bar_page.dart';
 
 void main() async {
@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
                 theme: lightThem,
                 home: user != null && user.emailVerified
                     ? const NavigationBarPage()
-                    : const LoginPag(),
+                    : const SingInPage(),
               ));
         });
   }

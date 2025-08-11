@@ -3,85 +3,87 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-part 'fire_authentication_state.dart';
+part 'create_user_state.dart';
 
-class FireAuthenticationCubit extends Cubit<FireAuthenticationState> {
-  FireAuthenticationCubit() : super(FireAuthenticationInitial());
-  static FireAuthenticationCubit get(context) => BlocProvider.of(context);
-  String? singInEmail;
-  String? singInPassword;
-  var formKey = GlobalKey<FormState>();
-  AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
+class CreateUserCubit extends Cubit<CreateUserState> {
+  CreateUserCubit() : super(CreateUserInitial());
+  static CreateUserCubit get(context) => BlocProvider.of(context);
+
   User? user = FirebaseAuth.instance.currentUser;
-  String? email;
-  String? password;
   FirebaseAuth auth = FirebaseAuth.instance;
-
-  void singInUser() async {
+  singInUser({required String email, required String password}) async {
     String message = '';
     try {
-      emit(SingInLoadingState());
-      await auth.signInWithEmailAndPassword(
-        email: singInEmail!.trim(),
-        password: singInPassword!.trim(),
-      );
-
-      if (user != null && !user!.emailVerified) {
-        await user!.sendEmailVerification();
+      if (user!.emailVerified) {
+        emit(SingInLoadingState());
+        await auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
       } else {
-        print('------------------------------------------------');
-        print('check your email');
+        await sendEmailVerification();
       }
+
       emit(SingInSuccessState());
     } on FirebaseAuthException catch (e) {
+      print('FirebaseAuthException code: ${e.code}');
+      print('FirebaseAuthException message: ${e.message}');
+
       if (e.code == 'user-not-found') {
+        print('..................................');
         print('No user found for that email.');
         print(message);
       } else if (e.code == 'wrong-password') {
+        print('..................................');
         print('Wrong password provided for that user.');
         print(message);
+      } else if (e.code == 'invalid-credential') {
+        print('Invalid credentials. Please check your email and password.');
       }
+      emit(SingInErrorState(error: e.message ?? 'Unknown error'));
     } catch (e) {
       emit(SingInErrorState(error: e.toString()));
     }
   }
 
-  void signInWithGoogle() async {
+  signInWithGoogle() async {
     try {
       emit(SingInGooglLoadingState());
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser != null) {
         // Obtain the auth details from the request
-        final GoogleSignInAuthentication googlAuth =
+        final GoogleSignInAuthentication? googleAuth =
             await googleUser.authentication;
 
         // Create a new credential
         final credential = GoogleAuthProvider.credential(
-          accessToken: googlAuth.accessToken,
-          idToken: googlAuth.idToken,
+          accessToken: googleAuth?.accessToken,
+          idToken: googleAuth?.idToken,
         );
 
         // Once signed in, return the UserCredential
-        await auth.signInWithCredential(credential);
+        await FirebaseAuth.instance.signInWithCredential(credential);
+
         emit(SingInGooglSuccessState());
       } else {
         print('================================================');
-        print('plese check google account');
+        print('plese check google acount');
       }
     } catch (e) {
       emit(SingInGooglErrorState(error: e.toString()));
     }
   }
 
-  void createUser() async {
+  createUser({required String email, required String password}) async {
     String message = '';
     try {
       emit(UserCreateLoadingState());
       await auth.createUserWithEmailAndPassword(
-        email: email!.trim(),
-        password: password!.trim(),
+        email: email,
+        password: password,
       );
+
       emit(UserCreateSuccessState());
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -104,12 +106,31 @@ class FireAuthenticationCubit extends Cubit<FireAuthenticationState> {
     }
   }
 
-  void sendEmailVerification() async {
+  DateTime? lastEmailSentTime; // نخزن آخر وقت إرسال
+
+  sendEmailVerification() async {
     User? user = FirebaseAuth.instance.currentUser;
 
+    // التحقق من وجود مستخدم
     if (user != null && !user.emailVerified) {
+      // إذا تم الإرسال سابقًا
+      if (lastEmailSentTime != null) {
+        final difference = DateTime.now().difference(lastEmailSentTime!);
+
+        if (difference.inSeconds < 60) {
+          print(
+              'يجب الانتظار ${60 - difference.inSeconds} ثانية قبل إعادة الإرسال.');
+          return;
+        }
+      }
+
+      // إرسال البريد
       await user.sendEmailVerification();
-      print('send email Verification');
+      print(
+          '  تم إرسال رابط التفعيل، قد يستغرق وصوله عدة دقائق، يرجى التحقق من البريد المزعج (Spam)');
+
+      // حفظ وقت الإرسال الحالي
+      lastEmailSentTime = DateTime.now();
     }
   }
 }

@@ -15,7 +15,7 @@ class ClientModel {
   get name => null;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = {};
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -55,15 +55,15 @@ class ClientData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['email'] = this.email;
-    data['address'] = this.address;
-    data['description'] = this.description;
-    data['phone'] = this.phone;
-    data['create_at'] = this.createAt;
-    data['update_at'] = this.updateAt;
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['name'] = name;
+    data['email'] = email;
+    data['address'] = address;
+    data['description'] = description;
+    data['phone'] = phone;
+    data['create_at'] = createAt;
+    data['update_at'] = updateAt;
     return data;
   }
 }

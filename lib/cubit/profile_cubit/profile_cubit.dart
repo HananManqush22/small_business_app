@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:small_business_app/core/api/api_consumer.dart';
 import 'package:small_business_app/core/api/end_point.dart';
 import 'package:small_business_app/core/cache/cache_helper.dart';
+import 'package:small_business_app/core/function/upload_image_to_api.dart';
 import 'package:small_business_app/models/profiled_model.dart';
 
 part 'profile_state.dart';
@@ -35,20 +36,13 @@ class ProfileCubit extends Cubit<ProfileState> {
   postProfile() async {
     try {
       emit(PostProfileStateLoadingState());
-      final response = await api.post(
-          url: brandEndPoint,
-          data: {
-            'name': '..',
-          },
-          isFormData: true);
-      CacheHelper().saveData(key: 'idBrand', value: response['idBrand']);
 
       await api.post(
           url: profiledEndPoint,
           data: {
             'brandID': CacheHelper().getData(key: 'idBrand'),
             'name': name,
-            'logo': '', //await uploadImageToApi(logo!),
+            'logo': await uploadImageToApi(logo!),
             'description': description,
             'phone': phone,
             'address': address,
